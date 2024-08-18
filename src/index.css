@@ -1,0 +1,29 @@
+:root {
+  --main-bg: #5a3e2b;
+  --top-menu-bg: #0e9aa7;
+  --sub-menu-bg: #3da4ab;
+}
+
+body {
+  font-family: Tahoma, Geneva, sans-serif;
+  height: 100vh;
+  margin: 0;
+  display: grid;
+  grid-template-rows: 3rem auto;
+  color: white;
+}
+
+  
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color: #213547;
+    background-color: #ffffff;
+  }
+  a:hover {
+    color: #747bff;
+  }
+  button {
+    background-color: #f9f9f9;
+  }
+}

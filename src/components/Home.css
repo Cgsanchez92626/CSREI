@@ -1,0 +1,29 @@
+/* Center contents of the main element */
+.home {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh; /* Ensure it takes up the full viewport height */
+  text-align: center; /* Center text horizontally */
+}
+
+/* Styling for the logo */
+#myLogo {
+  display: flex;
+  width: 500px;
+  height: 350px;
+  border: 2px solid black;
+  /* margin-top: 10px; */
+  padding: 10px;
+  background-color: #f3eded;
+  box-shadow: 10px 10px 1px rgba(117, 115, 115, 0.3);
+  animation: mymove 5s infinite;
+}
+
+/* Ensure the other styles you have remain intact if needed */
+@keyframes mymove {
+  50% {
+    border: 15px solid lightblue;
+  }
+}

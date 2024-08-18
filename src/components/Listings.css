@@ -1,0 +1,136 @@
+/* Listings.css */
+:root {
+  --main-bg: #5a3e2b;
+  --top-menu-bg: #0e9aa7;
+  --sub-menu-bg: #3da4ab;
+}
+
+body {
+  /* font-family: Arial, sans-serif; */
+  background-color: #5a3e2b;
+  margin: 0;
+  padding: 0;
+}
+
+main {
+  padding: 20px;
+}
+
+  
+  .zip-container {
+  display: block;
+  max-width: 400px;
+  max-width: 400px; /* Optional: Limit form width for better readability */
+    margin: auto; /* Center align the form horizontally */
+    margin-top: 10px;
+    padding: 20px; /* Add padding for spacing */
+  }
+  
+  .zip-container input[type="text"] {
+    width: 100%; /* Make input fields fill the width of their container */
+    padding: 10px; /*Add padding for input fields */
+    margin-bottom: 15px; /* Add margin between input fields */
+    box-sizing: border-box; /* Include padding and border in element's total width and height */
+  }
+
+  .zip-container button {
+    display: block; /* Ensure button is displayed as a block for proper alignment */
+    width: 100%; /* Make button fill the width of its container */
+    padding: 10px; /* Add padding for button */
+    background-color: #0e9aa7; /* Example background color */
+    color: white; /* Example text color */
+    border: none; /* Remove default border */
+    cursor: pointer; /* Change cursor to pointer on hover */
+    }
+  .carousel-container {
+    overflow-x: hidden; /* Hide horizontal overflow to prevent scrollbars */
+    margin-top: 20px;
+    width: 100%; /* Ensure carousel container occupies full width */
+    position: relative;
+  }
+  
+  .carousel {
+    max-width: 768px;
+    width: 100%;
+    /* margin: 0 auto; */
+    /* white-space: nowrap; */
+    display: flex; /* Ensure children are arranged in a row */
+    flex-wrap: nowrap; /* Prevent wrapping to a new line */
+    justify-content: flex-start; /* Align items at the start */
+    position: relative; /* Ensure positioning context for absolute elements */
+  }
+  
+  .property-card {
+    /* display: inline-block; */
+    flex: 0 0 auto; /* Ensure cards do not grow or shrink */
+    width: 300px; /* Set a fixed width for each property card */
+    margin-right: 10px; /* Add margin between cards */
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    overflow: hidden;
+    box-sizing: border-box; /* Include padding and border in total width */
+  }
+  
+  .property-card img {
+    /* width: 100%; */
+    /* height: auto; */
+    /* object-fit: cover; */
+    max-height: 100%;
+  }
+  
+  .property-card .details {
+    padding: 10px;
+  }
+  
+  .property-card .details h3 {
+    font-size: 18px;
+    margin: 0;
+  }
+  
+  .property-card .details p {
+    font-size: 14px;
+    margin: 5px 0;
+  }
+  
+  .property-card .details a {
+    display: block;
+    text-align: center;
+    color: #0e9aa7;
+    text-decoration: none;
+    font-size: 14px;
+  }
+  
+  .prev-btn, .next-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    padding: 10px 20px;
+    background-color: #0e9aa7;
+    color: white;
+    border: none;
+    cursor: pointer;
+    z-index: 100; /* Ensure buttons are above carousel */
+  }
+  
+  .prev-btn {
+    left: 10px;
+  }
+  
+  .next-btn {
+    right: 10px;
+  }
+  
+  @media (min-width: 768px) {
+    .property-card{
+        /* width: 100%; Full width for property cards on smaller screens */
+        flex: 0 0 33.3333333%;
+        /* max-width: none; Set max-width for larger screens */
+        margin-right: 10px; /* Remove margin-right on smaller screens */
+        /* display: block; */
+    }
+  
+    .prev-btn, .next-btn {
+        font-size: 14px; /* Adjust font size for smaller screens */
+        padding: 8px 16px; /* Adjust padding for smaller screens */
+    }
+  }

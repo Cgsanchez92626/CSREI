@@ -1,0 +1,108 @@
+* {
+  box-sizing: border-box;
+}
+
+/* CSS Custom Properties */
+:root {
+  --main-bg: #5a3e2b;
+  --top-menu-bg: #0e9aa7;
+  --sub-menu-bg: #3da4ab;
+}
+
+body {
+  font-family: Tahoma, Geneva, sans-serif;
+  height: 100vh;
+  margin: 0;
+  display: grid;
+  grid-template-rows: 3rem auto;
+  color: white;
+  background-color: var(--main-bg);
+}
+
+/* Ensure both top-menu and sub-menu are positioned as peers */
+header {
+  position: relative;
+}
+
+nav a {
+  line-height: 1rem;
+  padding: 0 1rem;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: white;
+}
+.flex-around {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+/* Styling for top menu */
+.top-menu {
+  background-color: var(--top-menu-bg);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 1rem;
+  z-index: 300;
+}
+
+/* Styling for menu items */
+.menu-item {
+  position: relative; /* Make menu items relative for absolute positioning of sub-menu */
+}
+
+/* Styling for sub-menu */
+.sub-menu {
+  background-color: var(--sub-menu-bg);
+  position: absolute;
+  top: 100%; /* Position below the top-menu */
+  left: 0;
+  /* width: 100%; Adjust width as needed */
+  display: flex;
+  flex-direction: column;
+  z-index: 200;
+  transition: top 0.5s ease-out;
+  display: none; /* Initially hidden */
+}
+
+.menu-item:hover .sub-menu {
+  display: flex; /* Show sub-menu on hover */
+}
+
+.sub-menu a {
+  text-decoration: none;
+  color: white;
+  padding: 1rem;
+  white-space: nowrap; /* Prevent wrapping of text */
+  overflow: hidden; /* Hide overflow text */
+  /* text-overflow: ellipsis; Add ellipsis if text overflows */
+}
+
+.signout {
+  color: white;
+}
+
+.signin {
+  color: white;
+}
+
+.top-menu a {
+  text-decoration: none;
+  color: white;
+  padding: 1rem;
+}
+
+.top-menu a.active {
+  background-color: var(--sub-menu-bg);
+  color: var(--main-bg);
+}
+
+.top-menu a:hover {
+  background-color: var(--sub-menu-bg);
+  color: var(--main-bg);
+}
+
+.sub-menu a:hover {
+  background-color: var(--top-menu-bg);
+  color: var(--main-bg);
+}

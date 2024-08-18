@@ -1,0 +1,27 @@
+/* Login.css */
+form#loginForm {
+    max-width: 400px; /* Optional: Limit form width for better readability */
+    margin: auto; /* Center align the form horizontally */
+    margin-top: 60px;
+    padding: 20px; /* Add padding for spacing */
+  }
+  form#loginForm label {
+    display: block; /* Ensure labels are displayed as blocks for proper alignment */
+    margin-bottom: 10px; /* Add margin below each label */
+  }
+  form#loginForm input[type="email"],
+  form#loginForm input[type="password"] {
+    width: 100%; /* Make input fields fill the width of their container */
+    padding: 10px; /* Add padding for input fields */
+    margin-bottom: 15px; /* Add margin between input fields */
+    box-sizing: border-box; /* Include padding and border in element's total width and height */
+  }
+  form#loginForm button {
+    display: block; /* Ensure button is displayed as a block for proper alignment */
+    width: 100%; /* Make button fill the width of its container */
+    padding: 10px; /* Add padding for button */
+    background-color: #0e9aa7; /* Example background color */
+    color: white; /* Example text color */
+    border: none; /* Remove default border */
+    cursor: pointer; /* Change cursor to pointer on hover */
+  }
