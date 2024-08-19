@@ -1,52 +1,37 @@
 // Login.jsx
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
-import { login } from "../features/auth/authSlice";
+import { loginUser } from "../features/auth/authSlice";
 import "./Login.css";
-
-const allowedUsers = [
-  { email: "CarmenSanchezREI@gmail.com", password: "pw123" },
-  { email: "User1@CSREI.com", password: "pw123" },
-  { email: "User2@CSREI.com", password: "pw123" },
-];
 
 const Login = () => {
   const dispatch = useDispatch();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
     // Basic email validation
     if (!isValidEmail(email)) {
-      alert("Please enter a valid email address.");
-      return;
-    }
-    const user = allowedUsers.find(
-      (user) => user.email.toLowerCase() === email.toLowerCase()
-    );
-    if (!user) {
-      alert("Access denied. You are not authorized to sign in.");
+      alert('Please enter a valid email address.');
       return;
     }
 
     // Password validation (just checking it's not empty here)
-    if (password.trim() === "") {
-      alert("Please enter your password.");
+    if (password.trim() === '') {
+      alert('Please enter your password.');
       return;
     }
 
-    if (user.password !== password) {
-      alert("Incorrect password.");
-      return;
+    try {
+      await dispatch(loginUser({ email, password })).unwrap();
+      alert('Login successful!');
+      window.location.href = '/'; // Redirect to home or another page after successful login
+    } catch (error) {
+      alert('An error occurred while logging in');
+      console.error('Login error:', error);
     }
-
-    // Successful login
-    dispatch(login());
-    alert("Login successful!");
-    // Redirect to home or another page after successful login
-    window.location.href = "/";
   };
 
   const isValidEmail = (email) => {
