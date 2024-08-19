@@ -1,0 +1,76 @@
+/* Listings.css */
+:root {
+  --main-bg: #5a3e2b;
+  --top-menu-bg: #0e9aa7;
+  --sub-menu-bg: #3da4ab;
+}
+
+body {
+  /* font-family: Arial, sans-serif; */
+  background-color: #5a3e2b;
+  margin: 0;
+  padding: 0;
+}
+
+main {
+  padding: 20px;
+}
+
+.crm-container {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+}
+
+.filter-container {
+  display: block;
+  max-width: 400px;
+  max-width: 400px; /* Optional: Limit form width for better readability */
+  margin: auto; /* Center align the form horizontally */
+  margin-top: 10px;
+  padding: 20px; /* Add padding for spacing */
+}
+
+.filter-container input[type="text"] {
+  width: 100%; /* Make input fields fill the width of their container */
+  padding: 10px; /*Add padding for input fields */
+  margin-bottom: 15px; /* Add margin between input fields */
+  box-sizing: border-box; /* Include padding and border in element's total width and height */
+}
+
+.filter-container button {
+  display: block; /* Ensure button is displayed as a block for proper alignment */
+  width: 100%; /* Make button fill the width of its container */
+  padding: 10px; /* Add padding for button */
+  background-color: #0e9aa7; /* Example background color */
+  color: white; /* Example text color */
+  border: none; /* Remove default border */
+  cursor: pointer; /* Change cursor to pointer on hover */
+}
+.crm-content {
+  display: flex;
+  justify-content: space-between;
+}
+
+.contacts,
+.properties {
+  width: 45%;
+}
+
+.contact-list,
+.property-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.contact-list li,
+.property-list li {
+  padding: 8px;
+  border-bottom: 1px solid #ccc;
+  cursor: pointer;
+}
+
+.contact-list li:hover,
+.property-list li:hover {
+  background-color: #f0f0f0;
+}

@@ -6,6 +6,7 @@ import Login from "./components/Login";
 import Listings from "./components/Listings";
 import "./index.css"; // Import the global CSS file
 import AboutMe from "./components/AboutMe";
+import CRM from './components/CRM';
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
           <Route path="/about" element={<AboutMe />} />
           <Route path="/login" element={<Login />} />
           <Route path="/listings" element={<Listings />} />
+          <Route path="/crm" element={<CRM />} />
         </Routes>
       </div>
     </Router>

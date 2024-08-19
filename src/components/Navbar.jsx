@@ -30,6 +30,7 @@ const Navbar = () => {
       href: "#",
       subLinks: [
         { classname: "listings", text: "listings", href: "/listings" },
+        { crm: "crm", text: "crm", href: "/crm" },
       ],
     },
     {
