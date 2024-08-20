@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { logout } from "../features/auth/authSlice";
+import { logoutUser } from "../features/auth/authSlice";
 import { Link, useNavigate } from "react-router-dom";
 import "./Navbar.css";
 
@@ -14,7 +14,7 @@ const Navbar = () => {
   const handleLogout = (event) => {
     event.preventDefault();
     // console.log("Logging out...");
-    dispatch(logout());
+    dispatch(logoutUser());
     // Redirect to login page
     navigate("/login");
   };

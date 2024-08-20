@@ -25,9 +25,9 @@ const Login = () => {
     }
 
     try {
-      await dispatch(loginUser({ email, password })).unwrap();
+      const actionResult = await dispatch(loginUser({ email, password })).unwrap();
       alert('Login successful!');
-      window.location.href = '/'; // Redirect to home or another page after successful login
+      // window.location.href = '/'; // Redirect to home or another page after successful login
     } catch (error) {
       alert('An error occurred while logging in');
       console.error('Login error:', error);

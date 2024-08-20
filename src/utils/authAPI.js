@@ -18,5 +18,8 @@ export const loginUser = async (credentials) => {
     throw new Error(errorData.msg || "Login failed");
   }
 
-  return response.json();
+  const data = await response.json();
+  console.log("API Response:", data); // Log the response data to check its structure
+  return data;
+
 };
