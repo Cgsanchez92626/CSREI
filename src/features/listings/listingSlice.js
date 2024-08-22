@@ -1,8 +1,8 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
-export const fetchProperties = createAsyncThunk(
-  "properties/fetchProperties",
+export const fetchListings = createAsyncThunk(
+  "listings/fetchListings",
   async (zipCode) => {
     const url = `https://zillow-com1.p.rapidapi.com/propertyExtendedSearch?location=${zipCode}&status_type=ForSale&home_type=Houses%2C%20Multi-family`;
     const options = {
@@ -17,8 +17,8 @@ export const fetchProperties = createAsyncThunk(
   }
 );
 
-const propertySlice = createSlice({
-  name: "properties",
+const listingSlice = createSlice({
+  name: "listings",
   initialState: {
     list: [],
     status: "idle",
@@ -27,18 +27,18 @@ const propertySlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(fetchProperties.pending, (state) => {
+      .addCase(fetchListings.pending, (state) => {
         state.status = "loading";
       })
-      .addCase(fetchProperties.fulfilled, (state, action) => {
+      .addCase(fetchListings.fulfilled, (state, action) => {
         state.status = "succeeded";
         state.list = action.payload;
       })
-      .addCase(fetchProperties.rejected, (state, action) => {
+      .addCase(fetchListings.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.error.message;
       });
   },
 });
 
-export default propertySlice.reducer;
+export default listingSlice.reducer;

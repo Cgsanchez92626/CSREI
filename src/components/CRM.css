@@ -1,4 +1,3 @@
-/* Listings.css */
 :root {
   --main-bg: #5a3e2b;
   --top-menu-bg: #0e9aa7;
@@ -6,61 +5,91 @@
 }
 
 body {
-  /* font-family: Arial, sans-serif; */
   background-color: #5a3e2b;
   margin: 0;
   padding: 0;
+  height: 100%; /* Ensure body takes up full height */
 }
 
-main {
-  padding: 20px;
+html, body {
+  height: 100%; /* Ensure html and body take up full height */
 }
 
 .crm-container {
   display: flex;
   flex-direction: column;
   padding: 20px;
+  height: 100vh; /* Ensure full viewport height */
+  box-sizing: border-box;
 }
 
 .filter-container {
-  display: block;
-  max-width: 400px;
-  max-width: 400px; /* Optional: Limit form width for better readability */
-  margin: auto; /* Center align the form horizontally */
-  margin-top: 10px;
-  padding: 20px; /* Add padding for spacing */
+  display: flex;
+  align-items: center; /* Center items vertically */
+  justify-content: flex-start; /* Align items to the left */
+  gap: 10px; /* Add spacing between elements */
+  max-width: 600px; /* Adjust based on your design */
+  margin: 0;
+  padding: 20px;
 }
 
-.filter-container input[type="text"] {
-  width: 100%; /* Make input fields fill the width of their container */
-  padding: 10px; /*Add padding for input fields */
-  margin-bottom: 15px; /* Add margin between input fields */
-  box-sizing: border-box; /* Include padding and border in element's total width and height */
+.filter-container label {
+  margin-right: 10px; /* Space between label and select */
+}
+
+#filter {
+  padding: 10px;
+  margin-right: 10px; /* Space between select and button */
+  flex: 1; /* Make the select input grow to fill available space */
 }
 
 .filter-container button {
-  display: block; /* Ensure button is displayed as a block for proper alignment */
-  width: 100%; /* Make button fill the width of its container */
-  padding: 10px; /* Add padding for button */
-  background-color: #0e9aa7; /* Example background color */
-  color: white; /* Example text color */
-  border: none; /* Remove default border */
-  cursor: pointer; /* Change cursor to pointer on hover */
+  padding: 10px 20px; /* Adjust button padding */
+  background-color: #0e9aa7;
+  color: white;
+  border: none;
+  cursor: pointer;
 }
+
 .crm-content {
   display: flex;
   justify-content: space-between;
+  flex-grow: 1;
+  margin-top: 20px; /* Adjusted to give some space */
+  overflow: hidden; /* Prevent overflow causing scrollbars */
 }
 
 .contacts,
 .properties {
-  width: 45%;
+  width: 50%;
+  padding: 10px;
+  border: 2px solid #0e9aa7; /* Border around the divs */
+  border-radius: 5px; /* Optional: add rounded corners */
+  box-sizing: border-box;
+  height: calc(100vh - 100px); /* Adjust based on your header height */
+  overflow-y: auto; /* Enable vertical scrolling */
+  margin: 0; /* Ensure no extra margin */
+}
+
+.contacts h2,
+.properties h2 {
+  background-color: #0e9aa7;
+  color: white;
+  text-align: center;
+  padding: 10px;
+  margin: 0; /* Remove default margin to align with borders */
+  border-bottom: 2px solid #0e9aa7; /* Add a border bottom to the heading */
+  box-sizing: border-box; /* Ensure padding is included in the width */
 }
 
 .contact-list,
 .property-list {
   list-style-type: none;
   padding: 0;
+  margin: 0;
+}
+.ul {
+    width: 0;
 }
 
 .contact-list li,
@@ -68,9 +97,20 @@ main {
   padding: 8px;
   border-bottom: 1px solid #ccc;
   cursor: pointer;
+  display: flex;
+  justify-content: space-between; /* Space out content to avoid wrapping */
+  align-items: center; /* Center items vertically */
+  white-space: nowrap; /* Prevent wrapping of text */
+  overflow: hidden; /* Hide overflow text */
+  text-overflow: ellipsis; /* Add ellipsis for overflow text */
 }
 
 .contact-list li:hover,
 .property-list li:hover {
   background-color: #f0f0f0;
+  color: #5a3e2b;
+}
+
+button {
+  margin-top: 10px;
 }

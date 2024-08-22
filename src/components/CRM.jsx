@@ -1,23 +1,34 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { fetchContacts } from "../features/crm/contactSlice";
 import {
-  fetchContacts,
   fetchProperties,
   setSelectedContact,
   clearSelectedContact,
-} from "../features/crm/crmSlice";
-import "./CRM.css"; // Add appropriate styles
+} from "../features/crm/propertySlice";
+import "./CRM.css"; // Ensure this file is properly linked
 
 const CRM = () => {
   const dispatch = useDispatch();
-  const { contacts, properties, selectedContact, status, error } = useSelector(
-    (state) => state.crm
-  );
+  const {
+    contacts,
+    status: contactsStatus,
+    error: contactsError,
+  } = useSelector((state) => state.contact);
+  const {
+    properties,
+    selectedContact,
+    status: propertiesStatus,
+    error: propertiesError,
+  } = useSelector((state) => state.property);
+
+  const isLoggedIn = useSelector((state) => state.auth.isLoggedIn); // Get isLoggedIn from auth state
+
   const [filter, setFilter] = useState("");
-  const [isSubmitted, setIsSubmitted] = useState(false); // State to manage form submission
-  
+  const [isSubmitted, setIsSubmitted] = useState(false);
+
   useEffect(() => {
-    if (filter && isSubmitted) {
+    if (isSubmitted) {
       dispatch(fetchContacts(filter));
     }
   }, [filter, isSubmitted, dispatch]);
@@ -34,7 +45,7 @@ const CRM = () => {
 
   const handleFilterSubmit = (e) => {
     e.preventDefault();
-    setIsSubmitted(true); // Set form submission state to true
+    setIsSubmitted(true);
   };
 
   const handleContactClick = (contact) => {
@@ -52,8 +63,8 @@ const CRM = () => {
   const renderContactList = () => (
     <ul className="contact-list">
       {contacts.map((contact) => (
-        <li key={contact.id} onDoubleClick={() => handleContactClick(contact)}>
-          {contact.lastname}, {contact.firstname} - {contact.phone}
+        <li key={contact._id} onDoubleClick={() => handleContactClick(contact)}>
+          {contact.lastname}, {contact.firstname}  | {contact.email}  | {contact.phone}
         </li>
       ))}
     </ul>
@@ -62,7 +73,7 @@ const CRM = () => {
   const renderPropertyList = () => (
     <ul className="property-list">
       {properties.map((property) => (
-        <li key={property.id}>
+        <li key={property._id}>
           {property.address} - {property.details}
         </li>
       ))}
@@ -71,42 +82,57 @@ const CRM = () => {
 
   return (
     <div className="crm-container">
-      {!isSubmitted ? (
-        <div className="filter-container">
-          <form onSubmit={handleFilterSubmit}>
-            <label htmlFor="filter">Select Filter:</label>
-            <select id="filter" value={filter} onChange={handleFilterChange}>
-              <option value="">Select...</option>
-              <option value="All">All</option>
-              <option value="Lead">Lead</option>
-              <option value="Prospect">Prospect</option>
-              <option value="Research">Research</option>
-              <option value="DNC">DNC</option>
-            </select>
-            <button type="submit">Filter</button>
-          </form>
-        </div>
+      {isLoggedIn ? (
+        <>
+          <div className="filter-container">
+            <form onSubmit={handleFilterSubmit}>
+              <label htmlFor="filter">Select Filter:</label>
+              <select id="filter" value={filter} onChange={handleFilterChange}>
+                <option value="" disabled>
+                  Select your filter
+                </option>
+                <option value="All">All</option>
+                <option value="Lead">Lead</option>
+                <option value="Prospect">Prospect</option>
+                <option value="Research">Research</option>
+                <option value="DNC">DNC</option>
+              </select>
+              <button type="submit">Get Contacts</button>
+            </form>
+          </div>
+          {isSubmitted && (
+            <div className="crm-content">
+              <div className="contacts">
+                <h2>Contacts</h2>
+                {contactsStatus === "loading" ? (
+                  <p>Loading...</p>
+                ) : (
+                  renderContactList()
+                )}
+                <button type="button" onClick={handleAddContact}>
+                  + Add Contact
+                </button>
+              </div>
+              <div className="properties">
+                <h2>Properties</h2>
+                {selectedContact ? (
+                  propertiesStatus === "loading" ? (
+                    <p>Loading...</p>
+                  ) : (
+                    renderPropertyList()
+                  )
+                ) : (
+                  <p>Select a contact to view properties.</p>
+                )}
+                <button type="button" onClick={handleAddProperty}>
+                  + Add Property
+                </button>
+              </div>
+            </div>
+          )}
+        </>
       ) : (
-        <div className="crm-content">
-          <div className="contacts">
-            <h2>Contacts</h2>
-            {status === "loading" ? <p>Loading...</p> : renderContactList()}
-            <button type="button" onClick={handleAddContact}>
-              + Add Contact
-            </button>
-          </div>
-          <div className="properties">
-            <h2>Properties</h2>
-            {selectedContact ? (
-              renderPropertyList()
-            ) : (
-              <p>Select a contact to view properties.</p>
-            )}
-            <button type="button" onClick={handleAddProperty}>
-              + Add Property
-            </button>
-          </div>
-        </div>
+        <p>Please Sign in to view this page.</p>
       )}
     </div>
   );

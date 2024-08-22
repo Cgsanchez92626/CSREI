@@ -1,12 +1,14 @@
-import { configureStore } from '@reduxjs/toolkit';
-import propertyReducer from '../features/properties/propertySlice';
-import authReducer from '../features/auth/authSlice';
-import crmReducer from '../features/crm/crmSlice';
+import { configureStore } from "@reduxjs/toolkit";
+import listingReducer from "../features/listings/listingSlice";
+import authReducer from "../features/auth/authSlice";
+import contactReducer from "../features/crm/contactSlice";
+import propertyReducer from "../features/crm/propertySlice";
 
 export const store = configureStore({
   reducer: {
-    properties: propertyReducer,
+    listing: listingReducer,
     auth: authReducer,
-    crm: crmReducer,
+    contact: contactReducer,
+    property: propertyReducer,
   },
 });
