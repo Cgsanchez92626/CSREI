@@ -13,6 +13,31 @@ export const fetchContactsApi = async (filter, agentId) => {
   return response.json();
 };
 
+export const updateContactApi = async (contact) => {
+  const response = await fetch(`${API_BASE_URL}/api/contacts/:${contactId}`, {
+    method: 'PUT',
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.msg || 'Failed to update contact');
+  }
+
+  return response.json();
+};
+
+export const deleteContactApi = async (contactId) => {
+  const response = await fetch(`${API_BASE_URL}/api/contacts/:${contactId}`, {
+    method: 'DEL',
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.msg || 'Failed to delete contact');
+  }
+
+  return response.json();
+};
 export const fetchPropertiesApi = async (contactId) => {
   const response = await fetch(`${API_BASE_URL}/api/properties?contactId=${contactId}`, {
     method: 'GET',

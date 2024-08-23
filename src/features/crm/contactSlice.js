@@ -1,39 +1,77 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { fetchContactsApi } from '../../utils/crmAPI';
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import {
+  fetchContactsApi,
+  updateContactApi,
+  deleteContactApi,
+} from "../../utils/crmAPI";
 
 // Define the initial state
 const initialState = {
   contacts: [],
-  status: 'idle',
+  status: "idle",
   error: null,
 };
 
 // Define the async thunk for fetching contacts
-export const fetchContacts = createAsyncThunk('contacts/fetchContacts', async (filter) => {
-  const agentId = localStorage.getItem('agentId');
-  if (!agentId) throw new Error('Agent ID is not available in local storage');
-  // console.log("filter: ", filter, agentId);
-  const contacts = await fetchContactsApi(filter, agentId);
-  return contacts;
-});
+export const fetchContacts = createAsyncThunk(
+  "contacts/fetchContacts",
+  async (filter) => {
+    const agentId = localStorage.getItem("agentId");
+    if (!agentId) throw new Error("Agent ID is not available in local storage");
+    // console.log("filter: ", filter, agentId);
+    const contacts = await fetchContactsApi(filter, agentId);
+    return contacts;
+  }
+);
+
+// Define the async thunk for updating a contact
+export const updateContact = createAsyncThunk(
+  "contacts/updateContact",
+  async (contact) => {
+    console.log("contact: ", contact);
+    const contacts = await updateContactApi(contact);
+  }
+);
+
+// Define the async thunk for deleting a contact
+export const deleteContact = createAsyncThunk(
+  "contacts/deleteContact",
+  async (contactId) => {
+    console.log("contactId: ", contactId);
+    const contacts = await deleteContactApi(contactId);
+  }
+);
 
 // Create the contacts slice
 const contactSlice = createSlice({
-  name: 'contacts',
+  name: "contacts",
   initialState,
   reducers: {},
   extraReducers: (builder) => {
     builder
       .addCase(fetchContacts.pending, (state) => {
-        state.status = 'loading';
+        state.status = "loading";
       })
       .addCase(fetchContacts.fulfilled, (state, action) => {
         state.contacts = action.payload;
-        state.status = 'succeeded';
+        state.status = "succeeded";
       })
       .addCase(fetchContacts.rejected, (state, action) => {
-        state.status = 'failed';
+        state.status = "failed";
         state.error = action.error.message;
+      })
+      .addCase(updateContact.fulfilled, (state, action) => {
+        const index = state.contacts.findIndex(
+          (contact) => contact._id === action.payload._id
+        );
+        if (index !== -1) {
+          state.contacts[index] = action.payload;
+        }
+      })
+      .addCase(deleteContact.fulfilled, (state, action) => {
+        state.contacts = state.contacts.filter(
+          (contact) => contact._id !== action.payload._id
+        );
       });
   },
 });
