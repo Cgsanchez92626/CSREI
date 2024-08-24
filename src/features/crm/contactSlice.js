@@ -3,6 +3,7 @@ import {
   fetchContactsApi,
   updateContactApi,
   deleteContactApi,
+  addContactApi,
 } from "../../utils/crmAPI";
 
 // Define the initial state
@@ -24,12 +25,23 @@ export const fetchContacts = createAsyncThunk(
   }
 );
 
+// Define the async thunk for adding a contact
+export const addContact = createAsyncThunk(
+  "contacts/addContact",
+  async (newContact) => {
+    // console.log("newContact: ", newContact);
+    const contact = await addContactApi(newContact);
+    return contact;
+  }
+);
+
 // Define the async thunk for updating a contact
 export const updateContact = createAsyncThunk(
   "contacts/updateContact",
   async (contact) => {
-    console.log("contact: ", contact);
-    const contacts = await updateContactApi(contact);
+    console.log("contact: ", contact); // Log the contact object to debug
+    const updatedContact = await updateContactApi(contact);
+    return updatedContact; // Ensure you return the result to be handled by the slice
   }
 );
 
@@ -59,6 +71,9 @@ const contactSlice = createSlice({
       .addCase(fetchContacts.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.error.message;
+      })
+      .addCase(addContact.fulfilled, (state, action) => {
+        state.contacts.push(action.payload);
       })
       .addCase(updateContact.fulfilled, (state, action) => {
         const index = state.contacts.findIndex(
