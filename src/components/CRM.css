@@ -136,6 +136,11 @@ body {
   color: #5a3e2b;
 }
 
+.contact-card.selectedContact {
+  background-color: #f0f0f0;
+  color: #5a3e2b;
+}
+
 .edit-contact-form,
 .add-contact-form {
   background-color: rgb(201, 196, 186); /* Light background color */

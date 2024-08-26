@@ -248,7 +248,7 @@ const CRM = () => {
         ) : (
           contacts.map((contact) => (
             <div
-              className="contact-card"
+              className={`contact-card ${contact === selectedContact? 'selectedContact' : ''}`}
               key={contact._id}
               onClick={() => handleContactSingleClick(contact)}
             >
@@ -348,80 +348,86 @@ const CRM = () => {
     </div>
   );
 
-  const renderEditContactForm = () => (
-    <div className="modal-overlay">
-      <div className="edit-contact-form modal-content">
-        <h3>Edit Contact</h3>
-        <form onSubmit={handleEditContactSubmit}>
-          <label>
-            First Name:
-            <input
-              type="text"
-              name="firstname"
-              value={editedContact.firstname}
-              onChange={handleEditContactChange}
-            />
-          </label>
-          <label>
-            Last Name:
-            <input
-              type="text"
-              name="lastname"
-              value={editedContact.lastname}
-              onChange={handleEditContactChange}
-            />
-          </label>
-          <label>
-            Email:
-            <input
-              type="email"
-              name="email"
-              value={editedContact.email}
-              onChange={handleEditContactChange}
-            />
-          </label>
-          <label>
-            Phone:
-            <input
-              type="text"
-              name="phone"
-              value={editedContact.phone}
-              onChange={handleEditContactChange}
-            />
-          </label>
-          <label>
-            Contact Status:
-            <select
-              name="contact_status"
-              value={editedContact.contact_status}
-              onChange={handleEditContactChange}
-            >
-              <option value="" disabled>
-                Select the Status
-              </option>
-              <option value="Lead">Lead</option>
-              <option value="Prospect">Prospect</option>
-              <option value="Research">Research</option>
-              <option value="DNC">DNC</option>
-            </select>
-          </label>
-          <label>
-            Last Contact Date:
-            <input
-              type="date"
-              name="last_contact_dt"
-              value={convertToDateForInput(editedContact.last_contact_dt)}
-              onChange={handleEditContactChange}
-            />
-          </label>
-          <button type="submit">Save Contact</button>
-          <button type="button" onClick={() => setEditedContactId(null)}>
-            Cancel
-          </button>
-        </form>
+  const renderEditContactForm = () => {
+    // Determine if the contact being edited is "Admin"
+    const isAdmin = editedContact.contact_status === "Admin";
+  
+    return (
+      <div className="modal-overlay">
+        <div className="edit-contact-form modal-content">
+          <h3>Edit Contact</h3>
+          <form onSubmit={handleEditContactSubmit}>
+            <label>
+              First Name:
+              <input
+                type="text"
+                name="firstname"
+                value={editedContact.firstname}
+                onChange={handleEditContactChange}
+              />
+            </label>
+            <label>
+              Last Name:
+              <input
+                type="text"
+                name="lastname"
+                value={editedContact.lastname}
+                onChange={handleEditContactChange}
+              />
+            </label>
+            <label>
+              Email:
+              <input
+                type="email"
+                name="email"
+                value={editedContact.email}
+                onChange={handleEditContactChange}
+              />
+            </label>
+            <label>
+              Phone:
+              <input
+                type="text"
+                name="phone"
+                value={editedContact.phone}
+                onChange={handleEditContactChange}
+              />
+            </label>
+            <label>
+              Contact Status:
+              <select
+                name="contact_status"
+                value={editedContact.contact_status}
+                onChange={handleEditContactChange}
+                disabled={isAdmin} // Conditionally disable the select field
+              >
+                <option value="" disabled>
+                  Select the Status
+                </option>
+                <option value="Lead">Lead</option>
+                <option value="Prospect">Prospect</option>
+                <option value="Research">Research</option>
+                <option value="DNC">DNC</option>
+              </select>
+            </label>
+            <label>
+              Last Contact Date:
+              <input
+                type="date"
+                name="last_contact_dt"
+                value={convertToDateForInput(editedContact.last_contact_dt)}
+                onChange={handleEditContactChange}
+              />
+            </label>
+            <button type="submit">Save Contact</button>
+            <button type="button" onClick={() => setEditedContactId(null)}>
+              Cancel
+            </button>
+          </form>
+        </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   const renderDeleteConfirmation = () => {
     if (!showDeleteConfirm) return null;
@@ -455,10 +461,13 @@ const CRM = () => {
             <p>Parcel Number: {property.parcelNumber}</p>
             <p>Year Built: {property.yearBuilt}</p>
             <p>Property Type: {property.propertyType}</p>
-            <button onClick={() => handlePropEditClick(selectedProperty)}>
+            <button onClick={() => handlePropEditClick(selectedProperty)}
+              disabled= {true}
+              >
               Edit
             </button>
-            <button onClick={handleDeleteClick}>Delete</button>
+            <button onClick={handleDeleteClick}
+            disabled= {true}>Delete</button>
           </div>
         ))
       ) : (
@@ -515,6 +524,7 @@ const CRM = () => {
                   className="add-btn"
                   type="button"
                   onClick={handleAddProperty}
+                  disabled= {true}
                 >
                   + Add Property
                 </button>
