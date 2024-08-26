@@ -39,7 +39,7 @@ export const addContact = createAsyncThunk(
 export const updateContact = createAsyncThunk(
   "contacts/updateContact",
   async (contact) => {
-    console.log("contact: ", contact); // Log the contact object to debug
+    // console.log("contact: ", contact); // Log the contact object to debug
     const updatedContact = await updateContactApi(contact);
     return updatedContact; // Ensure you return the result to be handled by the slice
   }
@@ -52,7 +52,7 @@ export const deleteContact = createAsyncThunk(
     if (!contactId) {
       throw new Error("Invalid contact ID");
     }
-    console.log("contactId: ", contactId);
+    // console.log("contactId: ", contactId);
     await deleteContactApi(contactId);
     return contactId; // Return the contactId after successful deletion
   }
@@ -87,10 +87,19 @@ const contactSlice = createSlice({
           state.contacts[index] = action.payload;
         }
       })
+      .addCase(deleteContact.pending, (state) => {
+        state.status = 'loading';
+      })
       .addCase(deleteContact.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        // Remove the deleted contact from the state
         state.contacts = state.contacts.filter(
-          (contact) => contact._id !== action.payload._id
+          (contact) => contact._id !== action.payload
         );
+      })
+      .addCase(deleteContact.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload;
       });
   },
 });

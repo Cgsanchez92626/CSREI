@@ -183,7 +183,7 @@ const CRM = () => {
 
   const handleEditContactSubmit = (e) => {
     e.preventDefault();
-    console.log("Submitting contact:", editedContact); // Adding this to debug
+    // console.log("Submitting contact:", editedContact); // Adding this to debug
 
     const agent = localStorage.getItem("agentId");
     if (agent) {
@@ -218,6 +218,7 @@ const CRM = () => {
         .then(() => {
           setShowDeleteConfirm(false);
           setDeleteContactId(null);
+          localStorage.removeItem(`contact_${deleteContactId}`);
           dispatch(clearProperties()); // clear properties after delete
         })
         .catch((error) => {
@@ -236,32 +237,50 @@ const CRM = () => {
     // Add logic to add property
   };
 
-  const renderContactList = () => (
-    <div className="contact-list">
-      {contacts.map((contact) => (
-        <div
-          className="contact-card"
-          key={contact._id}
-          onClick={() => handleContactSingleClick(contact)}
-        >
-          <div>
-            <h3>
-              Name: {contact.lastname},{contact.firstname}
-            </h3>
-          </div>
-          <p>Contact Type: {contact.contact_type} </p>
-          <p>Contact Status: {contact.contact_status} </p>
-          <p>Email: {contact.email}</p>
-          <p>Phone: {contact.phone} </p>
-          <p>Last Contact Date: {formatDate(contact.last_contact_dt)}</p>
-          <button onClick={() => handleEditClick(contact)}>Edit</button>
-          <button onClick={() => handleDeleteClick(contact._id)}>Delete</button>
-          {editedContactId === contact._id && renderEditContactForm()}
-        </div>
-      ))}
-      {renderDeleteConfirmation()}
-    </div>
-  );
+  const renderContactList = () => {
+    // Find Admin contact if you are storing it separately or use the status check
+    const adminContact = contacts.find((contact) => contact.contact_status === "Admin");
+  
+    return (
+      <div className="contact-list">
+        {contacts.length === 0 ? (
+          <p>No contacts found</p>
+        ) : (
+          contacts.map((contact) => (
+            <div
+              className="contact-card"
+              key={contact._id}
+              onClick={() => handleContactSingleClick(contact)}
+            >
+              <div>
+                <h3>
+                  Name: {contact.lastname}, {contact.firstname}
+                </h3>
+              </div>
+              <p>Contact Type: {contact.contact_type}</p>
+              <p>Contact Status: {contact.contact_status}</p>
+              <p>Email: {contact.email}</p>
+              <p>Phone: {contact.phone}</p>
+              <p>Last Contact Date: {formatDate(contact.last_contact_dt)}</p>
+              <button
+                onClick={() => handleEditClick(contact)}
+              >
+                Edit
+              </button>
+              <button
+                onClick={() => handleDeleteClick(contact._id)}
+                disabled={contact.contact_status === "Admin"}
+              >
+                Delete
+              </button>
+              {editedContactId === contact._id && renderEditContactForm()}
+            </div>
+          ))
+        )}
+        {renderDeleteConfirmation()} {/* Include renderDeleteConfirmation here */}
+      </div>
+    );
+  };
 
   const renderAddContactForm = () => (
     <div className="modal-overlay">
@@ -411,8 +430,8 @@ const CRM = () => {
       <div className="modal-overlay">
         <div className="delete-confirmation modal-content">
           <p>
-            Are you sure you want to delete this contact and all associated
-            properties?
+            Are you sure you want to delete this contact, any associated
+            properties will be re-assigned to Admin?
           </p>
           <button onClick={handleConfirmDelete}>Confirm</button>
           <button onClick={handleCancelDelete}>Cancel</button>

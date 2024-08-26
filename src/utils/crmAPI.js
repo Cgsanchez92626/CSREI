@@ -34,7 +34,7 @@ export const addContactApi = async (newContact) => {
 };
 
 export const updateContactApi = async (contact) => {
-  console.log("Updating contact:", contact);
+  // console.log("Updating contact:", contact);
   const response = await fetch(`${API_BASE_URL}/api/contacts/${contact._id}`, {
     method: "PUT",
     headers: {
@@ -43,8 +43,8 @@ export const updateContactApi = async (contact) => {
     body: JSON.stringify(contact), // Convert the contact object to JSON
   });
 
-  console.log("Response Status:", response.status); // Log response status
-  console.log("Response Body:", await response.clone().json()); // Log response body
+  // console.log("Response Status:", response.status); // Log response status
+  // console.log("Response Body:", await response.clone().json()); // Log response body
 
   if (!response.ok) {
     const errorData = await response.json();
@@ -59,7 +59,7 @@ export const deleteContactApi = async (contactId) => {
   if (!contactId) {
     throw new Error("Invalid contact ID");
   }
-  console.log("Deleting contactId:", contactId);
+  // console.log("Deleting contactId:", contactId);
   const response = await fetch(`${API_BASE_URL}/api/contacts/${contactId}`, {
     method: "DELETE",
   });
