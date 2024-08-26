@@ -49,8 +49,12 @@ export const updateContact = createAsyncThunk(
 export const deleteContact = createAsyncThunk(
   "contacts/deleteContact",
   async (contactId) => {
+    if (!contactId) {
+      throw new Error("Invalid contact ID");
+    }
     console.log("contactId: ", contactId);
-    const contacts = await deleteContactApi(contactId);
+    await deleteContactApi(contactId);
+    return contactId; // Return the contactId after successful deletion
   }
 );
 

@@ -23,3 +23,14 @@ export const loginUser = async (credentials) => {
   return data;
 
 };
+
+export const refreshToken = async () => {
+  const response = await fetch(`${API_BASE_URL}/api/auth/refresh`, {
+    method: 'POST',
+    headers: { 'Authorization': `Bearer ${localStorage.getItem('authToken')}` },
+  });
+
+  if (!response.ok) throw new Error('Token refresh failed');
+  
+  return response.json();
+};

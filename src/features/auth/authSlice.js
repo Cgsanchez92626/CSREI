@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { loginUser as loginUserApi } from "../../utils/authAPI";
+import { loginUser as loginUserApi, refreshToken as refreshTokenApi  } from "../../utils/authAPI";
 
 // Define the initial state
 const initialState = {
@@ -19,12 +19,24 @@ export const loginUser = createAsyncThunk(
   }
 );
 
+// Define the async thunk for token refresh
+export const refreshToken = createAsyncThunk(
+  "auth/refreshToken",
+  async () => {
+    const data = await refreshTokenApi();
+    return data;
+  }
+);
+
 export const logoutUser = createAsyncThunk("auth/logout", async () => {
   // Perform any async operations if needed
   // For now, just clear local storage and reset state
   localStorage.removeItem("isLoggedIn");
   localStorage.removeItem("authToken");
   localStorage.removeItem("agentId");
+  localStorage.removeItem("contact");
+  localStorage.removeItem("property");
+  localStorage.removeItem("listing")
   return {}; // No payload needed for logout
 });
 
@@ -41,7 +53,8 @@ const authSlice = createSlice({
       })
       .addCase(loginUser.fulfilled, (state, action) => {
         state.isLoggedIn = true;
-        state.token = action.payload;
+        state.token = action.payload.token;
+        state.agentId = action.payload._id;
         state.status = "succeeded";
         localStorage.setItem("isLoggedIn", JSON.stringify(true));
         localStorage.setItem("authToken", action.payload.token);
@@ -56,6 +69,10 @@ const authSlice = createSlice({
         state.token = null;
         state.agentId = null;
         state.status = "idle";
+      })
+      .addCase(refreshToken.fulfilled, (state, action) => {
+        state.token = action.payload.token;
+        localStorage.setItem("authToken", action.payload.token);
       });
   },
 });

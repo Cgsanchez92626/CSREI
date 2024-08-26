@@ -25,3 +25,8 @@ form#loginForm {
     border: none; /* Remove default border */
     cursor: pointer; /* Change cursor to pointer on hover */
   }
+  .error-message {
+    color: red;
+    font-size: large;
+    margin-top: 10px;
+  }

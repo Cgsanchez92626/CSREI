@@ -34,6 +34,7 @@ const CRM = () => {
     contact_type: "Owner",
     contact_status: "",
   });
+
   const [showAddContactForm, setShowAddContactForm] = useState(false);
 
   const [editedContactId, setEditedContactId] = useState(null);
@@ -51,6 +52,8 @@ const CRM = () => {
 
   const [filter, setFilter] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
+  
+  const [deleteContactId, setDeleteContactId] = useState(null); // New state for delete action
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   useEffect(() => {
@@ -199,15 +202,30 @@ const CRM = () => {
     }
   };
 
-  const handleDeleteClick = () => {
-    setShowDeleteConfirm(true);
+  const handleDeleteClick = (contactId) => {
+    if (contactId) {
+      setDeleteContactId(contactId);; // Set the ID of the contact to be deleted
+      setShowDeleteConfirm(true); // Show the confirmation dialog
+    } else {
+      console.error("No contact ID provided for deletion");
+    }
   };
 
   const handleConfirmDelete = () => {
-    dispatch(deleteContact(editedContact._id));
-    setShowDeleteConfirm(false);
-    setEditedContactId(null);
-    dispatch(clearProperties()); // clear properties after delete
+    if (deleteContactId) {
+      dispatch(deleteContact(deleteContactId))
+        .unwrap() // Ensure to handle promise resolution or rejection
+        .then(() => {
+          setShowDeleteConfirm(false);
+          setDeleteContactId(null);
+          dispatch(clearProperties()); // clear properties after delete
+        })
+        .catch((error) => {
+          console.error("Failed to delete contact: ", error);
+        });
+    } else {
+      console.error("No contact selected for deletion");
+    }
   };
 
   const handleCancelDelete = () => {
@@ -237,11 +255,11 @@ const CRM = () => {
           <p>Phone: {contact.phone} </p>
           <p>Last Contact Date: {formatDate(contact.last_contact_dt)}</p>
           <button onClick={() => handleEditClick(contact)}>Edit</button>
-          <button onClick={handleDeleteClick}>Delete</button>
+          <button onClick={() => handleDeleteClick(contact._id)}>Delete</button>
           {editedContactId === contact._id && renderEditContactForm()}
-          {renderDeleteConfirmation()}
         </div>
       ))}
+      {renderDeleteConfirmation()}
     </div>
   );
 

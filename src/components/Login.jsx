@@ -8,19 +8,20 @@ const Login = () => {
   const dispatch = useDispatch();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState(""); // Define errorMessage state
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
     // Basic email validation
     if (!isValidEmail(email)) {
-      alert('Please enter a valid email address.');
+      setErrorMessage('Please enter a valid email address.');
       return;
     }
 
     // Password validation (just checking it's not empty here)
     if (password.trim() === '') {
-      alert('Please enter your password.');
+      setErrorMessage('Please enter your password.');
       return;
     }
 
@@ -29,8 +30,8 @@ const Login = () => {
       alert('Login successful!');
       window.location.href = '/'; // Redirect to home or another page after successful login
     } catch (error) {
-      alert('An error occurred while logging in');
-      console.error('Login error:', error);
+      setErrorMessage(error.message || 'An error occurred while logging in' );
+      // console.error('Login error:', error);
     }
   };
 
@@ -64,6 +65,7 @@ const Login = () => {
         />
         <button type="submit">Sign In</button>
       </form>
+      {errorMessage && <p className="error-message">{errorMessage}</p>}
     </main>
   );
 };

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Home from "./components/Home";
@@ -7,8 +7,14 @@ import Listings from "./components/Listings";
 import "./index.css"; // Import the global CSS file
 import AboutMe from "./components/AboutMe";
 import CRM from './components/CRM';
+import startTokenRefresh from "./utils/tokenManager"; // Import the token manager
 
 function App() {
+  useEffect(() => {
+    // Start the token refresh process when the app mounts
+    startTokenRefresh();
+  }, []);
+  
   return (
     <Router>
       <div>
