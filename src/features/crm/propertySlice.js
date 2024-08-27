@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { fetchPropertiesApi } from "../../utils/crmAPI";
+import { fetchPropertiesApi, addPropertyApi } from "../../utils/crmAPI";
 
 // Define the initial state
 const initialState = {
@@ -17,6 +17,16 @@ export const fetchProperties = createAsyncThunk(
     const properties = await fetchPropertiesApi(contactId);
     // console.log("Fetched properties: ", properties);
     return properties;
+  }
+);
+
+// Define the async thunk for adding a Property
+export const addProperty = createAsyncThunk(
+  "contacts/addProperty",
+  async (newProperty) => {
+    console.log("newProperty: ", newProperty);
+    const property = await addPropertyApi(newProperty);
+    return property;
   }
 );
 
@@ -44,6 +54,9 @@ const propertySlice = createSlice({
       .addCase(fetchProperties.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.error.message;
+      })
+      .addCase(addProperty.fulfilled, (state, action) => {
+        state.properties.push(action.payload);
       });
   },
 });

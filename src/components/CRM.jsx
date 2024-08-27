@@ -10,6 +10,7 @@ import {
   fetchProperties,
   setSelectedContact,
   clearProperties,
+  addProperty,
 } from "../features/crm/propertySlice";
 import "./CRM.css"; // Styling file is properly linked
 
@@ -34,9 +35,20 @@ const CRM = () => {
     contact_type: "Owner",
     contact_status: "",
   });
+  const [newProperty, setNewProperty] = useState({
+    address: "",
+    city: "",
+    state: "",
+    zipcode: "",
+    county: "",
+    parcelNumber: "",
+    yearBuilt: "",
+    propertyType: "",
+  });
 
   const [showAddContactForm, setShowAddContactForm] = useState(false);
-
+  const [showAddPropertyForm, setShowAddPropertyForm] = useState(false);
+  const [validationErrors, setValidationErrors] = useState({});
   const [editedContactId, setEditedContactId] = useState(null);
   const [editedContact, setEditedContact] = useState({
     firstname: "",
@@ -52,7 +64,7 @@ const CRM = () => {
 
   const [filter, setFilter] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
-  
+
   const [deleteContactId, setDeleteContactId] = useState(null); // New state for delete action
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
@@ -204,7 +216,7 @@ const CRM = () => {
 
   const handleDeleteClick = (contactId) => {
     if (contactId) {
-      setDeleteContactId(contactId);; // Set the ID of the contact to be deleted
+      setDeleteContactId(contactId); // Set the ID of the contact to be deleted
       setShowDeleteConfirm(true); // Show the confirmation dialog
     } else {
       console.error("No contact ID provided for deletion");
@@ -233,14 +245,124 @@ const CRM = () => {
     setShowDeleteConfirm(false);
   };
 
-  const handleAddProperty = () => {
-    // Add logic to add property
+  // Function to format the parcel number input
+  const formatParcelNumber = (parcelNumber) => {
+    // Remove non-numeric characters
+    const cleaned = ("" + parcelNumber).replace(/\D/g, "");
+    return parcelNumber
+      .replace(/\D/g, "") // Remove non-numeric characters
+      .replace(/^(\d{4})(\d{0,3})(\d{0,3})$/, "$1-$2-$3")
+      .replace(/-$/, ""); // Remove trailing dash if present
+  };
+
+  // Helper function to validate zipcode format
+  const validateZipcode = (value) => /^\d{5}(-\d{4})?$/.test(value);
+
+  // Helper function to validate state abbreviation
+  const validateState = (value) => /^[A-Z]{2}$/.test(value);
+
+  // Helper function to validate parcel number format
+  const validateParcelNumber = (value) => /^\d{4}-\d{3}-\d{3}$/.test(value);
+
+  // Helper function to validate year built format
+  const validateYearBuilt = (value) => /^\d{4}$/.test(value);
+
+  // Helper function to validate non-empty string
+  const isNonEmptyString = (value) => value.trim() !== "";
+
+  const handleNewPropertyChange = (e) => {
+    const { name, value } = e.target;
+    if (name === "parcelNumber") {
+      setNewProperty((prevState) => ({
+        ...prevState,
+        [name]: formatParcelNumber(value), // Format parcelNumber number
+      }));
+    } else {
+      setNewProperty((prevState) => ({
+        ...prevState,
+        [name]: value,
+      }));
+    }
+  };
+
+  const handleAddPropertySubmit = (e) => {
+    e.preventDefault();
+    const newErrors = {};
+
+    // Validate address
+    if (!isNonEmptyString(newProperty.address)) {
+      newErrors.address = "Address is required";
+    }
+
+    // Validate city
+    if (
+      !isNonEmptyString(newProperty.city) ||
+      !/^[A-Za-z\s-]+$/.test(newProperty.city)
+    ) {
+      newErrors.city =
+        "City is required and can only contain letters, spaces, or hyphens";
+    }
+
+    // Validate state
+    if (!validateState(newProperty.state)) {
+      newErrors.state = "State must be a 2-letter abbreviation";
+    }
+
+    // Validate zipcode
+    if (!validateZipcode(newProperty.zipcode)) {
+      newErrors.zipcode = "Zipcode must be in the format 12345 or 12345-6789";
+    }
+
+    // Validate county
+    if (!isNonEmptyString(newProperty.county)) {
+      newErrors.county = "County is required";
+    }
+
+    // Validate parcel number
+    if (!validateParcelNumber(newProperty.parcelNumber)) {
+      newErrors.parcelNumber =
+        "Parcel number must be in the format 9999-999-999";
+    }
+
+    // Validate year built
+    if (!validateYearBuilt(newProperty.yearBuilt)) {
+      newErrors.yearBuilt = "Year built must be a 4-digit number";
+    }
+
+    if (Object.keys(newErrors).length === 0) {
+      console.log("Submitting Property:", newProperty); // Adding this to debug
+      const contact = selectedContact._id;
+      console.log("contactId: ", contact);
+      if (contact) {
+        const propertyWithContact = { ...newProperty, contact };
+        dispatch(addProperty(propertyWithContact)); // Dispatch action to add property
+        setShowAddPropertyForm(false);
+        setNewProperty({
+          address: "",
+          city: "",
+          state: "",
+          zipcode: "",
+          county: "",
+          parcelNumber: "",
+          yearBuilt: "",
+          propertyType: "",
+        });
+        setValidationErrors({}); // Clear validation errors
+      } else {
+        console.error("Contact ID is missing");
+      }
+    } else {
+      // Set validation errors to state for display
+      setValidationErrors(newErrors);
+    }
   };
 
   const renderContactList = () => {
     // Find Admin contact if you are storing it separately or use the status check
-    const adminContact = contacts.find((contact) => contact.contact_status === "Admin");
-  
+    const adminContact = contacts.find(
+      (contact) => contact.contact_status === "Admin"
+    );
+
     return (
       <div className="contact-list">
         {contacts.length === 0 ? (
@@ -248,7 +370,9 @@ const CRM = () => {
         ) : (
           contacts.map((contact) => (
             <div
-              className={`contact-card ${contact === selectedContact? 'selectedContact' : ''}`}
+              className={`contact-card ${
+                contact === selectedContact ? "selectedContact" : ""
+              }`}
               key={contact._id}
               onClick={() => handleContactSingleClick(contact)}
             >
@@ -262,11 +386,7 @@ const CRM = () => {
               <p>Email: {contact.email}</p>
               <p>Phone: {contact.phone}</p>
               <p>Last Contact Date: {formatDate(contact.last_contact_dt)}</p>
-              <button
-                onClick={() => handleEditClick(contact)}
-              >
-                Edit
-              </button>
+              <button onClick={() => handleEditClick(contact)}>Edit</button>
               <button
                 onClick={() => handleDeleteClick(contact._id)}
                 disabled={contact.contact_status === "Admin"}
@@ -277,7 +397,8 @@ const CRM = () => {
             </div>
           ))
         )}
-        {renderDeleteConfirmation()} {/* Include renderDeleteConfirmation here */}
+        {renderDeleteConfirmation()}{" "}
+        {/* Include renderDeleteConfirmation here */}
       </div>
     );
   };
@@ -351,7 +472,7 @@ const CRM = () => {
   const renderEditContactForm = () => {
     // Determine if the contact being edited is "Admin"
     const isAdmin = editedContact.contact_status === "Admin";
-  
+
     return (
       <div className="modal-overlay">
         <div className="edit-contact-form modal-content">
@@ -461,13 +582,15 @@ const CRM = () => {
             <p>Parcel Number: {property.parcelNumber}</p>
             <p>Year Built: {property.yearBuilt}</p>
             <p>Property Type: {property.propertyType}</p>
-            <button onClick={() => handlePropEditClick(selectedProperty)}
-              disabled= {true}
-              >
+            <button
+              onClick={() => handlePropEditClick(selectedProperty)}
+              disabled={true}
+            >
               Edit
             </button>
-            <button onClick={handleDeleteClick}
-            disabled= {true}>Delete</button>
+            <button onClick={handleDeleteClick} disabled={true}>
+              Delete
+            </button>
           </div>
         ))
       ) : (
@@ -476,6 +599,118 @@ const CRM = () => {
     </div>
   );
 
+  const renderAddPropertyForm = () => (
+    <div className="modal-overlay">
+      <div className="add-property-form modal-content">
+        <h3>Add New Property</h3>
+        <form onSubmit={handleAddPropertySubmit}>
+          <label>
+            Address:
+            <input
+              type="text"
+              name="address"
+              value={newProperty.address}
+              onChange={handleNewPropertyChange}
+            />
+            {validationErrors.address && (
+              <p className="error">{validationErrors.address}</p>
+            )}
+          </label>
+          <label>
+            City:
+            <input
+              type="text"
+              name="city"
+              value={newProperty.city}
+              onChange={handleNewPropertyChange}
+            />
+            {validationErrors.city && (
+              <p className="error">{validationErrors.city}</p>
+            )}
+          </label>
+          <label>
+            State:
+            <input
+              type="text"
+              name="state"
+              value={newProperty.state}
+              onChange={handleNewPropertyChange}
+            />
+            {validationErrors.state && (
+              <p className="error">{validationErrors.state}</p>
+            )}
+          </label>
+          <label>
+            Zipcode:
+            <input
+              type="text"
+              name="zipcode"
+              value={newProperty.zipcode}
+              onChange={handleNewPropertyChange}
+            />
+            {validationErrors.zipcode && (
+              <p className="error">{validationErrors.zipcode}</p>
+            )}
+          </label>
+          <label>
+            County:
+            <input
+              type="text"
+              name="county"
+              value={newProperty.county}
+              onChange={handleNewPropertyChange}
+            />
+            {validationErrors.county && (
+              <p className="error">{validationErrors.county}</p>
+            )}
+          </label>
+          <label>
+            Parcel Number:
+            <input
+              type="text"
+              name="parcelNumber"
+              value={newProperty.parcelNumber}
+              onChange={handleNewPropertyChange}
+            />
+            {validationErrors.parcelNumber && (
+              <p className="error">{validationErrors.parcelNumber}</p>
+            )}
+          </label>
+          <label>
+            Year Built:
+            <input
+              type="text"
+              name="yearBuilt"
+              value={newProperty.yearBuilt}
+              onChange={handleNewPropertyChange}
+            />
+            {validationErrors.yearBuilt && (
+              <p className="error">{validationErrors.yearBuilt}</p>
+            )}
+          </label>
+          <label>
+            Property Type:
+            <select
+              name="propertyType"
+              value={newProperty.propertyType}
+              onChange={handleNewPropertyChange}
+            >
+              <option value="" disabled>
+                Select the Property Type
+              </option>
+              <option value="Single-Family">Single-Family</option>
+              <option value="Multi-Family">Multi-Family</option>
+              <option value="Mix-Use">Mix-Use</option>
+            </select>
+          </label>
+          <button type="submit">Add Property</button>
+          <button type="button" onClick={() => setShowAddPropertyForm(false)}>
+            Cancel
+          </button>
+        </form>
+      </div>
+    </div>
+  );
   return (
     <div className="crm-container">
       {isLoggedIn ? (
@@ -523,11 +758,11 @@ const CRM = () => {
                 <button
                   className="add-btn"
                   type="button"
-                  onClick={handleAddProperty}
-                  disabled= {true}
+                  onClick={() => setShowAddPropertyForm(true)}
                 >
                   + Add Property
                 </button>
+                {showAddPropertyForm && renderAddPropertyForm()}
                 {selectedContact ? (
                   propertiesStatus === "loading" ? (
                     <p>Loading...</p>

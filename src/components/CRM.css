@@ -141,8 +141,10 @@ body {
   color: #5a3e2b;
 }
 
+
 .edit-contact-form,
-.add-contact-form {
+.add-contact-form,
+.add-property-form {
   background-color: rgb(201, 196, 186); /* Light background color */
   border: 1px solid #ddd; /* Light border */
   border-radius: 8px; /* Rounded corners */
@@ -153,18 +155,21 @@ body {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
 }
 
+
 .edit-contact-form label,
-.add-contact-form label {
+.add-contact-form label,
+.add-property-form label {
   display: block; /* Block display for labels */
   margin-bottom: 0.5rem; /* Space below labels */
   font-weight: bold; /* Bold labels */
 }
 
 .edit-contact-form h3,
-.add-contact-form h3 {
+.add-contact-form h3,
+.add-property-form h3 {
   margin-bottom: 1.5rem; /* Space below heading */
   font-size: 1.5rem; /* Font size for the heading */
-  color: #333; /* Dark text color */
+  color: #5a3e2b; /* Dark text color */
 }
 
 .edit-contact-form input[type="text"],
@@ -172,7 +177,9 @@ body {
 .edit-contact-form select,
 .add-contact-form input[type="text"],
 .add-contact-form input[type="email"],
-.add-contact-form select {
+.add-contact-form select,
+.add-property-form input[type="text"],
+.add-property-form select {
   width: 100%; /* Full width inputs */
   padding: 0.75rem; /* Padding inside inputs */
   margin-bottom: 1rem; /* Space below inputs */
@@ -184,7 +191,9 @@ body {
 .edit-contact-form button[type="submit"],
 .edit-contact-form button[type="button"],
 .add-contact-form button[type="submit"],
-.add-contact-form button[type="button"] {
+.add-contact-form button[type="button"],
+.add-property-form button[type="submit"],
+.add-property-form button[type="button"] {
   background-color: #0e9aa7; /* Primary button color */
   color: #fff; /* Text color for buttons */
   border: none; /* Remove default border */
@@ -199,7 +208,9 @@ body {
 .edit-contact-form button[type="submit"]:hover,
 .edit-contact-form button[type="button"]:hover,
 .add-contact-form button[type="submit"]:hover,
-.add-contact-form button[type="button"]:hover {
+.add-contact-form button[type="button"]:hover,
+.add-property-form button[type="button"]:hover,
+.add-property-form button[type="submit"]:hover {
   background-color: #055c64;; /* Darker button color on hover */
 }
 
@@ -241,4 +252,9 @@ button {
   background-color: orange;
   margin-top: 10px;
   margin-right: 0 0 0 50px;
+}
+
+.error {
+  color: red;
+  font-size: 0.9em;
 }

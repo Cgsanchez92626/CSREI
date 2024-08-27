@@ -84,3 +84,20 @@ export const fetchPropertiesApi = async (contactId) => {
 
   return response.json();
 };
+
+export const addPropertyApi = async (newProperty) => {
+  const response = await fetch(`${API_BASE_URL}/api/properties`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(newProperty),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.msg || "Failed to add property");
+  }
+
+  return response.json();
+};
