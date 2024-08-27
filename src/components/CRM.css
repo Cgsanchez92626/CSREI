@@ -14,14 +14,15 @@ body {
 html,
 body {
   height: 100%; /* Ensure html and body take up full height */
+  margin: 0;
 }
 
 .crm-container {
   display: flex;
   flex-direction: column;
   padding: 20px;
-  height: 100vh; /* Ensure full viewport height */
-  box-sizing: border-box;
+  height: calc(100vh - 51.5px); /* Ensure full viewport height */
+  /* box-sizing: border-box; */
 }
 
 .filter-container {
@@ -67,7 +68,7 @@ body {
   border: 2px solid #0e9aa7; /* Border around the divs */
   border-radius: 5px; /* Optional: add rounded corners */
   box-sizing: border-box;
-  height: calc(100vh - 100px); /* Adjust based on your header height */
+  height: calc(100vh - 198.5px); /* Adjust based on your header height */
   overflow-y: auto; /* Enable vertical scrolling */
   margin: 0; /* Ensure no extra margin */
   position: relative; /* For absolute positioning of the add-btn */
@@ -132,7 +133,7 @@ body {
 
 .contact-card:hover,
 .prop-card:hover {
-  background-color: #f0f0f0;
+  background-color: #d4cccc;
   color: #5a3e2b;
 }
 
@@ -140,7 +141,6 @@ body {
   background-color: #f0f0f0;
   color: #5a3e2b;
 }
-
 
 .edit-contact-form,
 .add-contact-form,
@@ -154,7 +154,6 @@ body {
   margin: 2rem auto; /* Center align and space from top */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
 }
-
 
 .edit-contact-form label,
 .add-contact-form label,
@@ -211,7 +210,7 @@ body {
 .add-contact-form button[type="button"]:hover,
 .add-property-form button[type="button"]:hover,
 .add-property-form button[type="submit"]:hover {
-  background-color: #055c64;; /* Darker button color on hover */
+  background-color: #055c64; /* Darker button color on hover */
 }
 
 /* General overlay styling */
@@ -257,4 +256,25 @@ button {
 .error {
   color: red;
   font-size: 0.9em;
+}
+
+/* WebKit Browsers (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+  width: 30px; /* Width of the scrollbar */
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: orange; /* Color of the scrollbar thumb */
+  /* border-radius: 6px; Rounded corners for the thumb */
+}
+
+::-webkit-scrollbar-track {
+  background-color: #fff; /* Color of the track */
+  /* border-radius: 6px; Rounded corners for the track */
+}
+
+/* Firefox */
+* {
+  scrollbar-width: auto; /* auto or thin scrollbar */
+  scrollbar-color: orange #fff; /* thumb color and track color */
 }

@@ -48,6 +48,7 @@ const CRM = () => {
 
   const [showAddContactForm, setShowAddContactForm] = useState(false);
   const [showAddPropertyForm, setShowAddPropertyForm] = useState(false);
+  const [isFormTouched, setIsFormTouched] = useState(false);
   const [validationErrors, setValidationErrors] = useState({});
   const [editedContactId, setEditedContactId] = useState(null);
   const [editedContact, setEditedContact] = useState({
@@ -140,24 +141,68 @@ const CRM = () => {
     }
   };
 
+  // Helper function to validate email
+  const isValidEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  // Helper function to validate parcel number format
+  const isValidPhone = (phone) =>
+    /^\d{3}-\d{3}-\d{4}$/.test(phone) ||
+    /^\d{1,3}-\d{3}-\d{3}-\d{4}$/.test(phone);
+
   const handleAddContactSubmit = (e) => {
     e.preventDefault();
-    // console.log("Submitting contact:", newContact); // Adding this to debug
-    const agent = localStorage.getItem("agentId");
-    if (agent) {
-      const contactWithAgent = { ...newContact, agent };
-      dispatch(addContact(contactWithAgent)); // Dispatch action to add contact
-      setShowAddContactForm(false);
-      setNewContact({
-        firstname: "",
-        lastname: "",
-        email: "",
-        phone: "",
-        contact_type: "Owner",
-        contact_status: "",
-      });
+    const newErrors = {};
+
+    // Validate firstname
+    if (!isNonEmptyString(newContact.firstname)) {
+      newErrors.firstname = "First Name is required";
+    }
+    // Validate lastname
+    if (!isNonEmptyString(newContact.lastname)) {
+      newErrors.lastname = "Last Name is required";
+    }
+
+    // Validate email
+    if (!isValidEmail(newContact.email)) {
+      newErrors.email = "Email must have proper pattern";
+    }
+
+    // Validate phone
+    if (!isValidPhone(newContact.phone)) {
+      newErrors.phone =
+        "Phone must be in the format 999-999-999 or 9-999-999-9999";
+    }
+
+    // Validate contactStatus
+    if (!isNonEmptyString(newContact.contact_status)) {
+      newErrors.contact_status = "Please select, Contact Status is required";
+    }
+
+    if (Object.keys(newErrors).length === 0) {
+      // console.log("Submitting contact:", newContact); // Adding this to debug
+      const agent = localStorage.getItem("agentId");
+      if (agent) {
+        const contactWithAgent = { ...newContact, agent };
+        dispatch(addContact(contactWithAgent)); // Dispatch action to add contact
+        setShowAddContactForm(false);
+        setNewContact({
+          firstname: "",
+          lastname: "",
+          email: "",
+          phone: "",
+          contact_type: "Owner",
+          contact_status: "",
+        });
+        setValidationErrors({}); // Clear validation errors
+      } else {
+        console.error("Agent ID is missing");
+      }
     } else {
-      console.error("Agent ID is missing");
+      // Set validation errors to state for display
+      setValidationErrors(newErrors);
     }
   };
 
@@ -186,6 +231,7 @@ const CRM = () => {
         [name]: value,
       }));
     }
+    setIsFormTouched(true); // Mark form as touched
   };
 
   const handleEditClick = (contact) => {
@@ -195,22 +241,57 @@ const CRM = () => {
 
   const handleEditContactSubmit = (e) => {
     e.preventDefault();
-    // console.log("Submitting contact:", editedContact); // Adding this to debug
+    const newErrors = {};
 
-    const agent = localStorage.getItem("agentId");
-    if (agent) {
-      const formattedDate = formatDate(editedContact.last_contact_dt);
-      const contactWithAgent = {
-        ...editedContact,
-        agent,
-        last_contact_dt: formattedDate,
-      };
-      console.log("contactWithAgent: ", contactWithAgent);
-      // Dispatch action to save the edited contact
-      dispatch(updateContact(contactWithAgent));
-      setEditedContactId(null);
-    } else {
-      console.error("Agent ID is missing");
+    if (isFormTouched) {
+      // Validate firstname
+      if (!isNonEmptyString(editedContact.firstname)) {
+        newErrors.firstname = "First Name is required";
+      }
+      // Validate lastname
+      if (!isNonEmptyString(editedContact.lastname)) {
+        newErrors.lastname = "Last Name is required";
+      }
+
+      // Validate email
+      if (!isValidEmail(editedContact.email)) {
+        newErrors.email = "Email must have proper pattern";
+      }
+
+      // Validate phone
+      if (!isValidPhone(editedContact.phone)) {
+        newErrors.phone =
+          "Phone must be in the format 999-999-999 or 9-999-999-9999";
+      }
+
+      // Validate contactStatus
+      if (!isNonEmptyString(editedContact.contact_status)) {
+        newErrors.contact_status = "Please select, Contact Status is required";
+      }
+
+      if (Object.keys(newErrors).length === 0) {
+        // console.log("Submitting contact:", editedContact); // Adding this to debug
+
+        const agent = localStorage.getItem("agentId");
+        if (agent) {
+          const formattedDate = formatDate(editedContact.last_contact_dt);
+          const contactWithAgent = {
+            ...editedContact,
+            agent,
+            last_contact_dt: formattedDate,
+          };
+          // console.log("contactWithAgent: ", contactWithAgent);
+          // Dispatch action to save the edited contact
+          dispatch(updateContact(contactWithAgent));
+          setEditedContactId(null);
+          setValidationErrors({}); // Clear validation errors
+        } else {
+          console.error("Agent ID is missing");
+        }
+      } else {
+        // Set validation errors to state for display
+        setValidationErrors(newErrors);
+      }
     }
   };
 
@@ -329,10 +410,15 @@ const CRM = () => {
       newErrors.yearBuilt = "Year built must be a 4-digit number";
     }
 
+    // Validate contactStatus
+    if (!isNonEmptyString(newProperty.propertyType)) {
+      newErrors.propertyType = "Please select, Property Type is required";
+    }
+
     if (Object.keys(newErrors).length === 0) {
-      console.log("Submitting Property:", newProperty); // Adding this to debug
+      // console.log("Submitting Property:", newProperty); // Adding this to debug
       const contact = selectedContact._id;
-      console.log("contactId: ", contact);
+      // console.log("contactId: ", contact);
       if (contact) {
         const propertyWithContact = { ...newProperty, contact };
         dispatch(addProperty(propertyWithContact)); // Dispatch action to add property
@@ -416,6 +502,9 @@ const CRM = () => {
               value={newContact.firstname}
               onChange={handleNewContactChange}
             />
+            {validationErrors.firstname && (
+              <p className="error">{validationErrors.firstname}</p>
+            )}
           </label>
           <label>
             Last Name:
@@ -425,6 +514,9 @@ const CRM = () => {
               value={newContact.lastname}
               onChange={handleNewContactChange}
             />
+            {validationErrors.lastname && (
+              <p className="error">{validationErrors.lastname}</p>
+            )}
           </label>
           <label>
             Email:
@@ -434,6 +526,9 @@ const CRM = () => {
               value={newContact.email}
               onChange={handleNewContactChange}
             />
+            {validationErrors.email && (
+              <p className="error">{validationErrors.email}</p>
+            )}
           </label>
           <label>
             Phone:
@@ -443,6 +538,9 @@ const CRM = () => {
               value={newContact.phone}
               onChange={handleNewContactChange}
             />
+            {validationErrors.phone && (
+              <p className="error">{validationErrors.phone}</p>
+            )}
           </label>
           <label>
             Contact Status:
@@ -459,6 +557,9 @@ const CRM = () => {
               <option value="Research">Research</option>
               <option value="DNC">DNC</option>
             </select>
+            {validationErrors.contact_status && (
+              <p className="error">{validationErrors.contact_status}</p>
+            )}
           </label>
           <button type="submit">Add Contact</button>
           <button type="button" onClick={() => setShowAddContactForm(false)}>
@@ -485,7 +586,11 @@ const CRM = () => {
                 name="firstname"
                 value={editedContact.firstname}
                 onChange={handleEditContactChange}
+                required
               />
+              {validationErrors.firstname && (
+                <p className="error">{validationErrors.firstname}</p>
+              )}
             </label>
             <label>
               Last Name:
@@ -494,7 +599,11 @@ const CRM = () => {
                 name="lastname"
                 value={editedContact.lastname}
                 onChange={handleEditContactChange}
+                required
               />
+              {validationErrors.lastname && (
+                <p className="error">{validationErrors.lastname}</p>
+              )}
             </label>
             <label>
               Email:
@@ -504,6 +613,9 @@ const CRM = () => {
                 value={editedContact.email}
                 onChange={handleEditContactChange}
               />
+              {validationErrors.email && (
+                <p className="error">{validationErrors.email}</p>
+              )}
             </label>
             <label>
               Phone:
@@ -513,6 +625,9 @@ const CRM = () => {
                 value={editedContact.phone}
                 onChange={handleEditContactChange}
               />
+              {validationErrors.phone && (
+                <p className="error">{validationErrors.phone}</p>
+              )}
             </label>
             <label>
               Contact Status:
@@ -521,6 +636,7 @@ const CRM = () => {
                 value={editedContact.contact_status}
                 onChange={handleEditContactChange}
                 disabled={isAdmin} // Conditionally disable the select field
+                required
               >
                 <option value="" disabled>
                   Select the Status
@@ -530,6 +646,9 @@ const CRM = () => {
                 <option value="Research">Research</option>
                 <option value="DNC">DNC</option>
               </select>
+              {validationErrors.contact_status && (
+                <p className="error">{validationErrors.contact_status}</p>
+              )}
             </label>
             <label>
               Last Contact Date:
@@ -582,7 +701,7 @@ const CRM = () => {
             <p>Parcel Number: {property.parcelNumber}</p>
             <p>Year Built: {property.yearBuilt}</p>
             <p>Property Type: {property.propertyType}</p>
-            <button
+            {/* <button
               onClick={() => handlePropEditClick(selectedProperty)}
               disabled={true}
             >
@@ -590,7 +709,7 @@ const CRM = () => {
             </button>
             <button onClick={handleDeleteClick} disabled={true}>
               Delete
-            </button>
+            </button> */}
           </div>
         ))
       ) : (
@@ -702,6 +821,9 @@ const CRM = () => {
               <option value="Multi-Family">Multi-Family</option>
               <option value="Mix-Use">Mix-Use</option>
             </select>
+            {validationErrors.propertyType && (
+              <p className="error">{validationErrors.propertyType}</p>
+            )}
           </label>
           <button type="submit">Add Property</button>
           <button type="button" onClick={() => setShowAddPropertyForm(false)}>
@@ -720,7 +842,7 @@ const CRM = () => {
               <label htmlFor="filter">Select Filter:</label>
               <select id="filter" value={filter} onChange={handleFilterChange}>
                 <option value="" disabled>
-                  Select your filter
+                  Select your Contact Type
                 </option>
                 <option value="All">All</option>
                 <option value="Lead">Lead</option>
