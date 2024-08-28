@@ -1,5 +1,8 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { loginUser as loginUserApi, refreshToken as refreshTokenApi  } from "../../utils/authAPI";
+import {
+  loginUser as loginUserApi,
+  refreshToken as refreshTokenApi,
+} from "../../utils/authAPI";
 
 // Define the initial state
 const initialState = {
@@ -14,19 +17,19 @@ const initialState = {
 export const loginUser = createAsyncThunk(
   "auth/loginUser",
   async (credentials) => {
+    localStorage.removeItem("contact");
+    localStorage.removeItem("property");
+    localStorage.removeItem("listing");
     const data = await loginUserApi(credentials);
     return data; // Return the token and _id from the API
   }
 );
 
 // Define the async thunk for token refresh
-export const refreshToken = createAsyncThunk(
-  "auth/refreshToken",
-  async () => {
-    const data = await refreshTokenApi();
-    return data;
-  }
-);
+export const refreshToken = createAsyncThunk("auth/refreshToken", async () => {
+  const data = await refreshTokenApi();
+  return data;
+});
 
 export const logoutUser = createAsyncThunk("auth/logout", async () => {
   // Perform any async operations if needed
@@ -36,7 +39,7 @@ export const logoutUser = createAsyncThunk("auth/logout", async () => {
   localStorage.removeItem("agentId");
   localStorage.removeItem("contact");
   localStorage.removeItem("property");
-  localStorage.removeItem("listing")
+  localStorage.removeItem("listing");
   return {}; // No payload needed for logout
 });
 

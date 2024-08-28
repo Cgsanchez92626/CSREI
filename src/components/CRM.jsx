@@ -70,6 +70,8 @@ const CRM = () => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   useEffect(() => {
+    // console.log("isSubmitted: ", isSubmitted);
+    // console.log("Selected contact: ", selectedContact);
     if (isSubmitted) {
       dispatch(fetchContacts(filter));
       dispatch(clearProperties());
@@ -77,18 +79,25 @@ const CRM = () => {
   }, [filter, isSubmitted, dispatch]);
 
   useEffect(() => {
+    // console.log("Selected contact: ", selectedContact);
     if (selectedContact) {
-      // console.log("Selected contact: ", selectedContact);
       dispatch(fetchProperties(selectedContact._id));
     } else {
       dispatch(clearProperties());
     }
   }, [selectedContact, dispatch]);
 
-  const handleFilterChange = (e) => setFilter(e.target.value);
+  const handleFilterChange = (e) => {
+    setFilter(e.target.value); // Update the filter value
+    // Clear the selected contact when filter is changed
+    // console.log("Clearing selectedContact");
+    setSelectedContact(null); // Clear selectedCOntact
+    setIsSubmitted(false); // Reset isSubmitted when filter changes
+  };
 
   const handleFilterSubmit = (e) => {
     e.preventDefault();
+    setSelectedContact(null); // Clear selectedCOntact
     setIsSubmitted(true);
   };
 
@@ -143,14 +152,24 @@ const CRM = () => {
 
   // Helper function to validate email
   const isValidEmail = (email) => {
+    // Return true if phone is an empty string
+    if (email === "") return true;
+    // Check if email matches the specified formats
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   };
 
-  // Helper function to validate parcel number format
-  const isValidPhone = (phone) =>
-    /^\d{3}-\d{3}-\d{4}$/.test(phone) ||
-    /^\d{1,3}-\d{3}-\d{3}-\d{4}$/.test(phone);
+  // Helper function to validate phone format
+  const isValidPhone = (phone) => {
+    // Return true if phone is an empty string
+    if (phone === "") return true;
+
+    // Check if phone matches either of the specified formats
+    return (
+      /^\d{3}-\d{3}-\d{4}$/.test(phone) ||
+      /^\d{1,3}-\d{3}-\d{3}-\d{4}$/.test(phone)
+    );
+  };
 
   const handleAddContactSubmit = (e) => {
     e.preventDefault();
@@ -167,13 +186,13 @@ const CRM = () => {
 
     // Validate email
     if (!isValidEmail(newContact.email)) {
-      newErrors.email = "Email must have proper pattern";
+      newErrors.email = "If present, Email must have proper pattern";
     }
 
     // Validate phone
     if (!isValidPhone(newContact.phone)) {
       newErrors.phone =
-        "Phone must be in the format 999-999-999 or 9-999-999-9999";
+        "If present, Phone must be in the format 999-999-999 or 9-999-999-9999";
     }
 
     // Validate contactStatus
@@ -255,13 +274,13 @@ const CRM = () => {
 
       // Validate email
       if (!isValidEmail(editedContact.email)) {
-        newErrors.email = "Email must have proper pattern";
+        newErrors.email = "If present, Email must have proper pattern";
       }
 
       // Validate phone
       if (!isValidPhone(editedContact.phone)) {
         newErrors.phone =
-          "Phone must be in the format 999-999-999 or 9-999-999-9999";
+          "If present, Phone must be in the format 999-999-999 or 9-999-999-9999";
       }
 
       // Validate contactStatus
@@ -343,10 +362,16 @@ const CRM = () => {
   const validateState = (value) => /^[A-Z]{2}$/.test(value);
 
   // Helper function to validate parcel number format
-  const validateParcelNumber = (value) => /^\d{4}-\d{3}-\d{3}$/.test(value);
+  const validateParcelNumber = (value) => {
+    if (value === "") return true;
+    return /^\d{4}-\d{3}-\d{3}$/.test(value);
+  };
 
   // Helper function to validate year built format
-  const validateYearBuilt = (value) => /^\d{4}$/.test(value);
+  const validateYearBuilt = (value) => {
+    if (value === "") return true;
+    return /^\d{4}$/.test(value);
+  };
 
   // Helper function to validate non-empty string
   const isNonEmptyString = (value) => value.trim() !== "";
@@ -386,17 +411,21 @@ const CRM = () => {
 
     // Validate state
     if (!validateState(newProperty.state)) {
-      newErrors.state = "State must be a 2-letter abbreviation";
+      newErrors.state = "State is required and must be a 2-letter abbreviation";
     }
 
     // Validate zipcode
     if (!validateZipcode(newProperty.zipcode)) {
-      newErrors.zipcode = "Zipcode must be in the format 12345 or 12345-6789";
+      newErrors.zipcode =
+        "Zipcode is required and must be in the format 12345 or 12345-6789";
     }
 
     // Validate county
-    if (!isNonEmptyString(newProperty.county)) {
-      newErrors.county = "County is required";
+    if (
+      isNonEmptyString(newProperty.county) &&
+      !/^[A-Za-z\s-]+$/.test(newProperty.county)
+    ) {
+      newErrors.county = "County can only contain letters, spaces, or hyphens";
     }
 
     // Validate parcel number
@@ -701,15 +730,6 @@ const CRM = () => {
             <p>Parcel Number: {property.parcelNumber}</p>
             <p>Year Built: {property.yearBuilt}</p>
             <p>Property Type: {property.propertyType}</p>
-            {/* <button
-              onClick={() => handlePropEditClick(selectedProperty)}
-              disabled={true}
-            >
-              Edit
-            </button>
-            <button onClick={handleDeleteClick} disabled={true}>
-              Delete
-            </button> */}
           </div>
         ))
       ) : (
@@ -877,22 +897,24 @@ const CRM = () => {
               </div>
               <div className="properties">
                 <h2>Properties</h2>
-                <button
-                  className="add-btn"
-                  type="button"
-                  onClick={() => setShowAddPropertyForm(true)}
-                >
-                  + Add Property
-                </button>
-                {showAddPropertyForm && renderAddPropertyForm()}
                 {selectedContact ? (
-                  propertiesStatus === "loading" ? (
-                    <p>Loading...</p>
-                  ) : propertiesStatus === "failed" ? (
-                    <p>Error loading properties: {propertiesError}</p>
-                  ) : (
-                    renderPropertyList()
-                  )
+                  <>
+                    <button
+                      className="add-btn"
+                      type="button"
+                      onClick={() => setShowAddPropertyForm(true)}
+                    >
+                      + Add Property
+                    </button>
+                    {showAddPropertyForm && renderAddPropertyForm()}
+                    {propertiesStatus === "loading" ? (
+                      <p>Loading...</p>
+                    ) : propertiesStatus === "failed" ? (
+                      <p>Error loading properties: {propertiesError}</p>
+                    ) : (
+                      renderPropertyList()
+                    )}
+                  </>
                 ) : (
                   <p>Select a contact to view properties.</p>
                 )}

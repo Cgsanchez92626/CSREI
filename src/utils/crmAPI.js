@@ -48,7 +48,7 @@ export const updateContactApi = async (contact) => {
 
   if (!response.ok) {
     const errorData = await response.json();
-    console.error("Update error:", errorData); // Debug log
+    // console.error("Update error:", errorData); // Debug log
     throw new Error(errorData.msg || "Failed to update contact");
   }
 
@@ -86,6 +86,7 @@ export const fetchPropertiesApi = async (contactId) => {
 };
 
 export const addPropertyApi = async (newProperty) => {
+  console.log("Adding newProperty: ", newProperty);
   const response = await fetch(`${API_BASE_URL}/api/properties`, {
     method: "POST",
     headers: {
@@ -96,6 +97,7 @@ export const addPropertyApi = async (newProperty) => {
 
   if (!response.ok) {
     const errorData = await response.json();
+    console.error("Add Property error:", errorData); // Debug log
     throw new Error(errorData.msg || "Failed to add property");
   }
 

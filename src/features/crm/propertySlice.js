@@ -24,7 +24,7 @@ export const fetchProperties = createAsyncThunk(
 export const addProperty = createAsyncThunk(
   "contacts/addProperty",
   async (newProperty) => {
-    console.log("newProperty: ", newProperty);
+    // console.log("newProperty: ", newProperty);
     const property = await addPropertyApi(newProperty);
     return property;
   }
