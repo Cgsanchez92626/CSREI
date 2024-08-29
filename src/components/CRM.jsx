@@ -13,6 +13,7 @@ import {
   addProperty,
 } from "../features/crm/propertySlice";
 import "./CRM.css"; // Styling file is properly linked
+import * as validators from '../utils/validators';
 
 const CRM = () => {
   const dispatch = useDispatch();
@@ -62,10 +63,8 @@ const CRM = () => {
   });
 
   const isLoggedIn = useSelector((state) => state.auth.isLoggedIn); // Get isLoggedIn from auth state
-
   const [filter, setFilter] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
-
   const [deleteContactId, setDeleteContactId] = useState(null); // New state for delete action
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
@@ -79,7 +78,6 @@ const CRM = () => {
   }, [filter, isSubmitted, dispatch]);
 
   useEffect(() => {
-    // console.log("Selected contact: ", selectedContact);
     if (selectedContact) {
       dispatch(fetchProperties(selectedContact._id));
     } else {
@@ -89,10 +87,11 @@ const CRM = () => {
 
   const handleFilterChange = (e) => {
     setFilter(e.target.value); // Update the filter value
-    // Clear the selected contact when filter is changed
-    // console.log("Clearing selectedContact");
     setSelectedContact(null); // Clear selectedCOntact
     setIsSubmitted(false); // Reset isSubmitted when filter changes
+    localStorage.removeItem(`properties}`);
+    localStorage.removeItem(`contacts}`);
+    localStorage.removeItem(`selectedContact}`);
   };
 
   const handleFilterSubmit = (e) => {
@@ -105,42 +104,12 @@ const CRM = () => {
     dispatch(setSelectedContact(contact));
   };
 
-  const formatPhoneNumber = (phone) => {
-    // Remove non-numeric characters
-    const cleaned = ("" + phone).replace(/\D/g, "");
-    // Check the length of cleaned phone number
-    const match = cleaned.match(/^(\d{1,3})(\d{3})(\d{3})(\d{4})$/);
-    if (match) {
-      return `${match[1]}-${match[2]}-${match[3]}-${match[4]}`;
-    }
-    const match2 = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/);
-    if (match2) {
-      return `${match2[1]}-${match2[2]}-${match2[3]}`;
-    }
-    return phone; // Return the original phone if it doesn't match the pattern
-  };
-
-  const convertToDateForInput = (date) => {
-    if (!date) return "";
-    const [month, day, year] = date.split("-").map(Number);
-    return `${year}-${("0" + month).slice(-2)}-${("0" + day).slice(-2)}`;
-  };
-
-  const formatDate = (date) => {
-    if (!date) return "";
-    const d = new Date(date);
-    const month = `0${d.getMonth() + 1}`.slice(-2); // Months are zero-based
-    const day = `0${d.getDate()}`.slice(-2);
-    const year = d.getFullYear();
-    return `${month}-${day}-${year}`;
-  };
-
   const handleNewContactChange = (e) => {
     const { name, value } = e.target;
     if (name === "phone") {
       setNewContact((prevState) => ({
         ...prevState,
-        [name]: formatPhoneNumber(value), // Format phone number
+        [name]: validators.formatPhoneNumber(value), // Format phone number
       }));
     } else {
       setNewContact((prevState) => ({
@@ -150,53 +119,32 @@ const CRM = () => {
     }
   };
 
-  // Helper function to validate email
-  const isValidEmail = (email) => {
-    // Return true if phone is an empty string
-    if (email === "") return true;
-    // Check if email matches the specified formats
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  };
-
-  // Helper function to validate phone format
-  const isValidPhone = (phone) => {
-    // Return true if phone is an empty string
-    if (phone === "") return true;
-
-    // Check if phone matches either of the specified formats
-    return (
-      /^\d{3}-\d{3}-\d{4}$/.test(phone) ||
-      /^\d{1,3}-\d{3}-\d{3}-\d{4}$/.test(phone)
-    );
-  };
-
   const handleAddContactSubmit = (e) => {
     e.preventDefault();
     const newErrors = {};
 
     // Validate firstname
-    if (!isNonEmptyString(newContact.firstname)) {
+    if (!validators.isNonEmptyString(newContact.firstname)) {
       newErrors.firstname = "First Name is required";
     }
     // Validate lastname
-    if (!isNonEmptyString(newContact.lastname)) {
+    if (!validators.isNonEmptyString(newContact.lastname)) {
       newErrors.lastname = "Last Name is required";
     }
 
     // Validate email
-    if (!isValidEmail(newContact.email)) {
+    if (!validators.isValidEmail(newContact.email)) {
       newErrors.email = "If present, Email must have proper pattern";
     }
 
     // Validate phone
-    if (!isValidPhone(newContact.phone)) {
+    if (!validators.isValidPhone(newContact.phone)) {
       newErrors.phone =
         "If present, Phone must be in the format 999-999-999 or 9-999-999-9999";
     }
 
     // Validate contactStatus
-    if (!isNonEmptyString(newContact.contact_status)) {
+    if (!validators.isNonEmptyString(newContact.contact_status)) {
       newErrors.contact_status = "Please select, Contact Status is required";
     }
 
@@ -242,7 +190,7 @@ const CRM = () => {
     } else if (name === "phone") {
       setEditedContact((prevState) => ({
         ...prevState,
-        [name]: formatPhoneNumber(value), // Format phone number
+        [name]: validators.formatPhoneNumber(value), // Format phone number
       }));
     } else {
       setEditedContact((prevState) => ({
@@ -264,27 +212,27 @@ const CRM = () => {
 
     if (isFormTouched) {
       // Validate firstname
-      if (!isNonEmptyString(editedContact.firstname)) {
+      if (!validators.isNonEmptyString(editedContact.firstname)) {
         newErrors.firstname = "First Name is required";
       }
       // Validate lastname
-      if (!isNonEmptyString(editedContact.lastname)) {
+      if (!validators.isNonEmptyString(editedContact.lastname)) {
         newErrors.lastname = "Last Name is required";
       }
 
       // Validate email
-      if (!isValidEmail(editedContact.email)) {
+      if (!validators.isValidEmail(editedContact.email)) {
         newErrors.email = "If present, Email must have proper pattern";
       }
 
       // Validate phone
-      if (!isValidPhone(editedContact.phone)) {
+      if (!validators.isValidPhone(editedContact.phone)) {
         newErrors.phone =
           "If present, Phone must be in the format 999-999-999 or 9-999-999-9999";
       }
 
       // Validate contactStatus
-      if (!isNonEmptyString(editedContact.contact_status)) {
+      if (!validators.isNonEmptyString(editedContact.contact_status)) {
         newErrors.contact_status = "Please select, Contact Status is required";
       }
 
@@ -293,7 +241,7 @@ const CRM = () => {
 
         const agent = localStorage.getItem("agentId");
         if (agent) {
-          const formattedDate = formatDate(editedContact.last_contact_dt);
+          const formattedDate = validators.formatDate(editedContact.last_contact_dt);
           const contactWithAgent = {
             ...editedContact,
             agent,
@@ -345,43 +293,12 @@ const CRM = () => {
     setShowDeleteConfirm(false);
   };
 
-  // Function to format the parcel number input
-  const formatParcelNumber = (parcelNumber) => {
-    // Remove non-numeric characters
-    const cleaned = ("" + parcelNumber).replace(/\D/g, "");
-    return parcelNumber
-      .replace(/\D/g, "") // Remove non-numeric characters
-      .replace(/^(\d{4})(\d{0,3})(\d{0,3})$/, "$1-$2-$3")
-      .replace(/-$/, ""); // Remove trailing dash if present
-  };
-
-  // Helper function to validate zipcode format
-  const validateZipcode = (value) => /^\d{5}(-\d{4})?$/.test(value);
-
-  // Helper function to validate state abbreviation
-  const validateState = (value) => /^[A-Z]{2}$/.test(value);
-
-  // Helper function to validate parcel number format
-  const validateParcelNumber = (value) => {
-    if (value === "") return true;
-    return /^\d{4}-\d{3}-\d{3}$/.test(value);
-  };
-
-  // Helper function to validate year built format
-  const validateYearBuilt = (value) => {
-    if (value === "") return true;
-    return /^\d{4}$/.test(value);
-  };
-
-  // Helper function to validate non-empty string
-  const isNonEmptyString = (value) => value.trim() !== "";
-
   const handleNewPropertyChange = (e) => {
     const { name, value } = e.target;
     if (name === "parcelNumber") {
       setNewProperty((prevState) => ({
         ...prevState,
-        [name]: formatParcelNumber(value), // Format parcelNumber number
+        [name]: validators.formatParcelNumber(value), // Format parcelNumber number
       }));
     } else {
       setNewProperty((prevState) => ({
@@ -396,13 +313,13 @@ const CRM = () => {
     const newErrors = {};
 
     // Validate address
-    if (!isNonEmptyString(newProperty.address)) {
+    if (!validators.isNonEmptyString(newProperty.address)) {
       newErrors.address = "Address is required";
     }
 
     // Validate city
     if (
-      !isNonEmptyString(newProperty.city) ||
+      !validators.isNonEmptyString(newProperty.city) ||
       !/^[A-Za-z\s-]+$/.test(newProperty.city)
     ) {
       newErrors.city =
@@ -410,37 +327,37 @@ const CRM = () => {
     }
 
     // Validate state
-    if (!validateState(newProperty.state)) {
+    if (!validators.validateState(newProperty.state)) {
       newErrors.state = "State is required and must be a 2-letter abbreviation";
     }
 
     // Validate zipcode
-    if (!validateZipcode(newProperty.zipcode)) {
+    if (!validators.validateZipcode(newProperty.zipcode)) {
       newErrors.zipcode =
         "Zipcode is required and must be in the format 12345 or 12345-6789";
     }
 
     // Validate county
     if (
-      isNonEmptyString(newProperty.county) &&
+      validators.isNonEmptyString(newProperty.county) &&
       !/^[A-Za-z\s-]+$/.test(newProperty.county)
     ) {
       newErrors.county = "County can only contain letters, spaces, or hyphens";
     }
 
     // Validate parcel number
-    if (!validateParcelNumber(newProperty.parcelNumber)) {
+    if (!validators.validateParcelNumber(newProperty.parcelNumber)) {
       newErrors.parcelNumber =
         "Parcel number must be in the format 9999-999-999";
     }
 
     // Validate year built
-    if (!validateYearBuilt(newProperty.yearBuilt)) {
+    if (!validators.validateYearBuilt(newProperty.yearBuilt)) {
       newErrors.yearBuilt = "Year built must be a 4-digit number";
     }
 
     // Validate contactStatus
-    if (!isNonEmptyString(newProperty.propertyType)) {
+    if (!validators.isNonEmptyString(newProperty.propertyType)) {
       newErrors.propertyType = "Please select, Property Type is required";
     }
 
@@ -473,7 +390,7 @@ const CRM = () => {
   };
 
   const renderContactList = () => {
-    // Find Admin contact if you are storing it separately or use the status check
+    // Find Admin contact for status check
     const adminContact = contacts.find(
       (contact) => contact.contact_status === "Admin"
     );
@@ -500,7 +417,7 @@ const CRM = () => {
               <p>Contact Status: {contact.contact_status}</p>
               <p>Email: {contact.email}</p>
               <p>Phone: {contact.phone}</p>
-              <p>Last Contact Date: {formatDate(contact.last_contact_dt)}</p>
+              <p>Last Contact Date: {validators.formatDate(contact.last_contact_dt)}</p>
               <button onClick={() => handleEditClick(contact)}>Edit</button>
               <button
                 onClick={() => handleDeleteClick(contact._id)}
@@ -684,7 +601,7 @@ const CRM = () => {
               <input
                 type="date"
                 name="last_contact_dt"
-                value={convertToDateForInput(editedContact.last_contact_dt)}
+                value={validators.convertToDateForInput(editedContact.last_contact_dt)}
                 onChange={handleEditContactChange}
               />
             </label>
